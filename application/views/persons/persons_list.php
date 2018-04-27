@@ -47,9 +47,12 @@
             <thead>
                 <tr>
                     <th width="80px">No</th>
-		    <th>LastName</th>
 		    <th>FirstName</th>
-		    <th>Age</th>
+		    <th>LastName</th>
+		    <th>Gender</th>
+		    <th>Address</th>
+		    <th>Dob</th>
+		    <th>Photo</th>
 		    <th width="200px">Action</th>
                 </tr>
             </thead>
@@ -92,9 +95,9 @@
                     ajax: {"url": "persons/json", "type": "POST"},
                     columns: [
                         {
-                            "data": "ID",
+                            "data": "id",
                             "orderable": false
-                        },{"data": "LastName"},{"data": "FirstName"},{"data": "Age"},
+                        },{"data": "firstName"},{"data": "lastName"},{"data": "gender"},{"data": "address"},{"data": "dob"},{"data": "photo"},
                         {
                             "data" : "action",
                             "orderable": false,

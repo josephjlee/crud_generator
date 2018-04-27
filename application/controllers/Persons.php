@@ -28,10 +28,13 @@ class Persons extends CI_Controller
         $row = $this->Persons_model->get_by_id($id);
         if ($row) {
             $data = array(
-		'ID' => $row->ID,
-		'LastName' => $row->LastName,
-		'FirstName' => $row->FirstName,
-		'Age' => $row->Age,
+		'id' => $row->id,
+		'firstName' => $row->firstName,
+		'lastName' => $row->lastName,
+		'gender' => $row->gender,
+		'address' => $row->address,
+		'dob' => $row->dob,
+		'photo' => $row->photo,
 	    );
             $this->load->view('persons/persons_read', $data);
         } else {
@@ -45,10 +48,13 @@ class Persons extends CI_Controller
         $data = array(
             'button' => 'Create',
             'action' => site_url('persons/create_action'),
-	    'ID' => set_value('ID'),
-	    'LastName' => set_value('LastName'),
-	    'FirstName' => set_value('FirstName'),
-	    'Age' => set_value('Age'),
+	    'id' => set_value('id'),
+	    'firstName' => set_value('firstName'),
+	    'lastName' => set_value('lastName'),
+	    'gender' => set_value('gender'),
+	    'address' => set_value('address'),
+	    'dob' => set_value('dob'),
+	    'photo' => set_value('photo'),
 	);
         $this->load->view('persons/persons_form', $data);
     }
@@ -61,9 +67,12 @@ class Persons extends CI_Controller
             $this->create();
         } else {
             $data = array(
-		'LastName' => $this->input->post('LastName',TRUE),
-		'FirstName' => $this->input->post('FirstName',TRUE),
-		'Age' => $this->input->post('Age',TRUE),
+		'firstName' => $this->input->post('firstName',TRUE),
+		'lastName' => $this->input->post('lastName',TRUE),
+		'gender' => $this->input->post('gender',TRUE),
+		'address' => $this->input->post('address',TRUE),
+		'dob' => $this->input->post('dob',TRUE),
+		'photo' => $this->input->post('photo',TRUE),
 	    );
 
             $this->Persons_model->insert($data);
@@ -80,10 +89,13 @@ class Persons extends CI_Controller
             $data = array(
                 'button' => 'Update',
                 'action' => site_url('persons/update_action'),
-		'ID' => set_value('ID', $row->ID),
-		'LastName' => set_value('LastName', $row->LastName),
-		'FirstName' => set_value('FirstName', $row->FirstName),
-		'Age' => set_value('Age', $row->Age),
+		'id' => set_value('id', $row->id),
+		'firstName' => set_value('firstName', $row->firstName),
+		'lastName' => set_value('lastName', $row->lastName),
+		'gender' => set_value('gender', $row->gender),
+		'address' => set_value('address', $row->address),
+		'dob' => set_value('dob', $row->dob),
+		'photo' => set_value('photo', $row->photo),
 	    );
             $this->load->view('persons/persons_form', $data);
         } else {
@@ -97,15 +109,18 @@ class Persons extends CI_Controller
         $this->_rules();
 
         if ($this->form_validation->run() == FALSE) {
-            $this->update($this->input->post('ID', TRUE));
+            $this->update($this->input->post('id', TRUE));
         } else {
             $data = array(
-		'LastName' => $this->input->post('LastName',TRUE),
-		'FirstName' => $this->input->post('FirstName',TRUE),
-		'Age' => $this->input->post('Age',TRUE),
+		'firstName' => $this->input->post('firstName',TRUE),
+		'lastName' => $this->input->post('lastName',TRUE),
+		'gender' => $this->input->post('gender',TRUE),
+		'address' => $this->input->post('address',TRUE),
+		'dob' => $this->input->post('dob',TRUE),
+		'photo' => $this->input->post('photo',TRUE),
 	    );
 
-            $this->Persons_model->update($this->input->post('ID', TRUE), $data);
+            $this->Persons_model->update($this->input->post('id', TRUE), $data);
             $this->session->set_flashdata('message', 'Update Record Success');
             redirect(site_url('persons'));
         }
@@ -127,11 +142,14 @@ class Persons extends CI_Controller
 
     public function _rules() 
     {
-	$this->form_validation->set_rules('LastName', 'lastname', 'trim|required');
-	$this->form_validation->set_rules('FirstName', 'firstname', 'trim|required');
-	$this->form_validation->set_rules('Age', 'age', 'trim|required');
+	$this->form_validation->set_rules('firstName', 'firstname', 'trim|required');
+	$this->form_validation->set_rules('lastName', 'lastname', 'trim|required');
+	$this->form_validation->set_rules('gender', 'gender', 'trim|required');
+	$this->form_validation->set_rules('address', 'address', 'trim|required');
+	$this->form_validation->set_rules('dob', 'dob', 'trim|required');
+	$this->form_validation->set_rules('photo', 'photo', 'trim|required');
 
-	$this->form_validation->set_rules('ID', 'ID', 'trim');
+	$this->form_validation->set_rules('id', 'id', 'trim');
 	$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
     }
 
@@ -157,18 +175,24 @@ class Persons extends CI_Controller
 
         $kolomhead = 0;
         xlsWriteLabel($tablehead, $kolomhead++, "No");
-	xlsWriteLabel($tablehead, $kolomhead++, "LastName");
 	xlsWriteLabel($tablehead, $kolomhead++, "FirstName");
-	xlsWriteLabel($tablehead, $kolomhead++, "Age");
+	xlsWriteLabel($tablehead, $kolomhead++, "LastName");
+	xlsWriteLabel($tablehead, $kolomhead++, "Gender");
+	xlsWriteLabel($tablehead, $kolomhead++, "Address");
+	xlsWriteLabel($tablehead, $kolomhead++, "Dob");
+	xlsWriteLabel($tablehead, $kolomhead++, "Photo");
 
 	foreach ($this->Persons_model->get_all() as $data) {
             $kolombody = 0;
 
             //ubah xlsWriteLabel menjadi xlsWriteNumber untuk kolom numeric
             xlsWriteNumber($tablebody, $kolombody++, $nourut);
-	    xlsWriteLabel($tablebody, $kolombody++, $data->LastName);
-	    xlsWriteLabel($tablebody, $kolombody++, $data->FirstName);
-	    xlsWriteNumber($tablebody, $kolombody++, $data->Age);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->firstName);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->lastName);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->gender);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->address);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->dob);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->photo);
 
 	    $tablebody++;
             $nourut++;
@@ -196,5 +220,5 @@ class Persons extends CI_Controller
 /* End of file Persons.php */
 /* Location: ./application/controllers/Persons.php */
 /* Please DO NOT modify this information : */
-/* Generated by Harviacode Codeigniter CRUD Generator 2018-04-24 06:29:09 */
+/* Generated by Harviacode Codeigniter CRUD Generator 2018-04-25 08:16:07 */
 /* http://harviacode.com */

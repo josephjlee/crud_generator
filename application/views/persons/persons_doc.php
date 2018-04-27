@@ -20,9 +20,12 @@
         <table class="word-table" style="margin-bottom: 10px">
             <tr>
                 <th>No</th>
-		<th>LastName</th>
 		<th>FirstName</th>
-		<th>Age</th>
+		<th>LastName</th>
+		<th>Gender</th>
+		<th>Address</th>
+		<th>Dob</th>
+		<th>Photo</th>
 		
             </tr><?php
             foreach ($persons_data as $persons)
@@ -30,9 +33,12 @@
                 ?>
                 <tr>
 		      <td><?php echo ++$start ?></td>
-		      <td><?php echo $persons->LastName ?></td>
-		      <td><?php echo $persons->FirstName ?></td>
-		      <td><?php echo $persons->Age ?></td>	
+		      <td><?php echo $persons->firstName ?></td>
+		      <td><?php echo $persons->lastName ?></td>
+		      <td><?php echo $persons->gender ?></td>
+		      <td><?php echo $persons->address ?></td>
+		      <td><?php echo $persons->dob ?></td>
+		      <td><?php echo $persons->photo ?></td>	
                 </tr>
                 <?php
             }
