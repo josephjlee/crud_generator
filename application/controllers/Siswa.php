@@ -5,22 +5,24 @@ if (!defined('BASEPATH'))
 
 class Siswa extends CI_Controller
 {
+    
+        
     function __construct()
     {
         parent::__construct();
         $this->load->model('Siswa_model');
-        $this->load->library('form_validation');        
-	$this->load->library('datatables');
+        $this->load->library('form_validation');
     }
 
     public function index()
     {
-        $this->load->view('siswa/siswa_list');
-    } 
-    
-    public function json() {
-        header('Content-Type: application/json');
-        echo $this->Siswa_model->json();
+        $siswa = $this->Siswa_model->get_all();
+
+        $data = array(
+            'siswa_data' => $siswa
+        );
+
+        $this->template->load('template','siswa_list', $data);
     }
 
     public function read($id) 
@@ -28,12 +30,11 @@ class Siswa extends CI_Controller
         $row = $this->Siswa_model->get_by_id($id);
         if ($row) {
             $data = array(
-		'ID' => $row->ID,
-		'LastName' => $row->LastName,
-		'FirstName' => $row->FirstName,
-		'Age' => $row->Age,
+		'id' => $row->id,
+		'nama' => $row->nama,
+		'id_jurusan' => $row->id_jurusan,
 	    );
-            $this->load->view('siswa/siswa_read', $data);
+            $this->template->load('template','siswa_read', $data);
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('siswa'));
@@ -45,12 +46,11 @@ class Siswa extends CI_Controller
         $data = array(
             'button' => 'Create',
             'action' => site_url('siswa/create_action'),
-	    'ID' => set_value('ID'),
-	    'LastName' => set_value('LastName'),
-	    'FirstName' => set_value('FirstName'),
-	    'Age' => set_value('Age'),
+	    'id' => set_value('id'),
+	    'nama' => set_value('nama'),
+	    'id_jurusan' => set_value('id_jurusan'),
 	);
-        $this->load->view('siswa/siswa_form', $data);
+        $this->template->load('template','siswa_form', $data);
     }
     
     public function create_action() 
@@ -61,9 +61,8 @@ class Siswa extends CI_Controller
             $this->create();
         } else {
             $data = array(
-		'LastName' => $this->input->post('LastName',TRUE),
-		'FirstName' => $this->input->post('FirstName',TRUE),
-		'Age' => $this->input->post('Age',TRUE),
+		'nama' => $this->input->post('nama',TRUE),
+		'id_jurusan' => $this->input->post('id_jurusan',TRUE),
 	    );
 
             $this->Siswa_model->insert($data);
@@ -80,12 +79,11 @@ class Siswa extends CI_Controller
             $data = array(
                 'button' => 'Update',
                 'action' => site_url('siswa/update_action'),
-		'ID' => set_value('ID', $row->ID),
-		'LastName' => set_value('LastName', $row->LastName),
-		'FirstName' => set_value('FirstName', $row->FirstName),
-		'Age' => set_value('Age', $row->Age),
+		'id' => set_value('id', $row->id),
+		'nama' => set_value('nama', $row->nama),
+		'id_jurusan' => set_value('id_jurusan', $row->id_jurusan),
 	    );
-            $this->load->view('siswa/siswa_form', $data);
+            $this->template->load('template','siswa_form', $data);
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('siswa'));
@@ -97,15 +95,14 @@ class Siswa extends CI_Controller
         $this->_rules();
 
         if ($this->form_validation->run() == FALSE) {
-            $this->update($this->input->post('ID', TRUE));
+            $this->update($this->input->post('id', TRUE));
         } else {
             $data = array(
-		'LastName' => $this->input->post('LastName',TRUE),
-		'FirstName' => $this->input->post('FirstName',TRUE),
-		'Age' => $this->input->post('Age',TRUE),
+		'nama' => $this->input->post('nama',TRUE),
+		'id_jurusan' => $this->input->post('id_jurusan',TRUE),
 	    );
 
-            $this->Siswa_model->update($this->input->post('ID', TRUE), $data);
+            $this->Siswa_model->update($this->input->post('id', TRUE), $data);
             $this->session->set_flashdata('message', 'Update Record Success');
             redirect(site_url('siswa'));
         }
@@ -127,11 +124,10 @@ class Siswa extends CI_Controller
 
     public function _rules() 
     {
-	$this->form_validation->set_rules('LastName', 'lastname', 'trim|required');
-	$this->form_validation->set_rules('FirstName', 'firstname', 'trim|required');
-	$this->form_validation->set_rules('Age', 'age', 'trim|required');
+	$this->form_validation->set_rules('nama', 'nama', 'trim|required');
+	$this->form_validation->set_rules('id_jurusan', 'id jurusan', 'trim|required');
 
-	$this->form_validation->set_rules('ID', 'ID', 'trim');
+	$this->form_validation->set_rules('id', 'id', 'trim');
 	$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
     }
 
@@ -157,18 +153,16 @@ class Siswa extends CI_Controller
 
         $kolomhead = 0;
         xlsWriteLabel($tablehead, $kolomhead++, "No");
-	xlsWriteLabel($tablehead, $kolomhead++, "LastName");
-	xlsWriteLabel($tablehead, $kolomhead++, "FirstName");
-	xlsWriteLabel($tablehead, $kolomhead++, "Age");
+	xlsWriteLabel($tablehead, $kolomhead++, "Nama");
+	xlsWriteLabel($tablehead, $kolomhead++, "Id Jurusan");
 
 	foreach ($this->Siswa_model->get_all() as $data) {
             $kolombody = 0;
 
             //ubah xlsWriteLabel menjadi xlsWriteNumber untuk kolom numeric
             xlsWriteNumber($tablebody, $kolombody++, $nourut);
-	    xlsWriteLabel($tablebody, $kolombody++, $data->LastName);
-	    xlsWriteLabel($tablebody, $kolombody++, $data->FirstName);
-	    xlsWriteNumber($tablebody, $kolombody++, $data->Age);
+	    xlsWriteLabel($tablebody, $kolombody++, $data->nama);
+	    xlsWriteNumber($tablebody, $kolombody++, $data->id_jurusan);
 
 	    $tablebody++;
             $nourut++;
@@ -188,7 +182,22 @@ class Siswa extends CI_Controller
             'start' => 0
         );
         
-        $this->load->view('siswa/siswa_doc',$data);
+        $this->load->view('siswa_doc',$data);
+    }
+
+    function pdf()
+    {
+        $data = array(
+            'siswa_data' => $this->Siswa_model->get_all(),
+            'start' => 0
+        );
+        
+        ini_set('memory_limit', '32M');
+        $html = $this->load->view('siswa_pdf', $data, true);
+        $this->load->library('pdf');
+        $pdf = $this->pdf->load();
+        $pdf->WriteHTML($html);
+        $pdf->Output('siswa.pdf', 'D'); 
     }
 
 }
@@ -196,5 +205,5 @@ class Siswa extends CI_Controller
 /* End of file Siswa.php */
 /* Location: ./application/controllers/Siswa.php */
 /* Please DO NOT modify this information : */
-/* Generated by Harviacode Codeigniter CRUD Generator 2018-04-24 06:31:51 */
+/* Generated by Harviacode Codeigniter CRUD Generator 2018-04-27 03:25:02 */
 /* http://harviacode.com */
